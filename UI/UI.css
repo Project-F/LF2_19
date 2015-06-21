@@ -1,0 +1,17 @@
+.alert_box
+{
+	background: #334DA4;
+	border: 6px solid #20316F;
+	border-radius: 10px;
+	box-shadow: none;
+}
+.alert_box > button
+{
+	background: #122565;
+	border: 2px solid #283D84;
+	color: #FFF;
+}
+.alert_box > button:hover
+{
+	border: 2px solid #5A77D8;
+}

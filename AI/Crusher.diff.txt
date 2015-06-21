@@ -1,0 +1,616 @@
+                                                                >  define(function()
+                                                                >  {
+                                                                >          function abs(x) {return x>0?x:-x;}
+                                                                >          function clr() {}
+                                                                >          function print(x)
+                                                                >          {
+                                                                >                  console.log('AI:'+x);
+                                                                >          }
+                                                                >          function AIscript(self,match,controller)
+                                                                >          {
+                                                                >                  var stage_bound = 0,
+                                                                >                          stage_clear = false,
+                                                                >                          current_phase = 0,
+                                                                >                          current_phase_count = 0,
+                                                                >                          current_stage = 0,
+                                                                >                          bg_width = match.background.width,
+                                                                >                          bg_zwidth1 = match.background.zboundary
+                                                                >                          bg_zwidth2 = match.background.zboundary
+                                                                >                          mode = 0, //0: VS, 1: Stage, 2: 1on1, 3
+                                                                >                          difficulty = 0; //-1: CRAZY!, 0: diffic
+                                                                >
+                                                                >                  var target;
+                                                                >                  var game_objects = match.scene.live;
+                                                                >
+                                                                >                  function rand(i)
+                                                                >                  {
+                                                                >                          return Math.floor(match.random()*i);
+                                                                >                  }
+                                                                >                  function loadTarget(i)
+                                                                >                  {
+                                                                >                          if( game_objects[i])
+                                                                >                          {
+                                                                >                                  target = game_objects[i];
+                                                                >                                  return target.AI.type();
+                                                                >                          }
+                                                                >                          return -1;
+                                                                >                  }
+                                                                >                  this.name = 'CRUSHER 1.0';
+                                                                >                  this.designed_for = ['Davis'];
+                                                                >                  this.author = 'YinYin';
+                                                                >
+// CRUSHER 1.0                                                     // CRUSHER 1.0
+// Designed for Davis                                              // Designed for Davis
+// Made by YinYin                                                  // Made by YinYin
+
+//davisspecials                                                    //davisspecials
+int ego(){                                                      |  function ego(){
+if(rand(22)+1>10*(difficulty)){                                    if(rand(22)+1>10*(difficulty)){
+ //define variables                                                 //define variables
+ int sfac = 2*(self.facing?1:0)-1;              //own direction |   var sfac = 2*(self.AI.facing()?1:0)-1;              //own dire
+ int tfac = 2*(target.facing?1:0)-1;           //target directi |   var tfac = 2*(target.AI.facing()?1:0)-1;           //target di
+ int bfac = (self.facing?1:0)+(target.facing?1:0)-1;//both faci |   var bfac = (self.AI.facing()?1:0)+(target.AI.facing()?1:0)-1;/
+ int stxd = self.x-target.x;           //x distance (left > 0 > |   var stxd = self.ps.x-target.ps.x;           //x distance (left
+ int styd = self.y-target.y;          //y distance (above > 0 > |   var styd = self.ps.y-target.ps.y;          //y distance (above
+ int stzd = abs(self.z-target.z);    //z distance               |   var stzd = abs(self.ps.z-target.ps.z);    //z distance
+ int dist = stxd*sfac;              //directional distance      |   var dist = stxd*sfac;              //directional distance
+ int tmp = target.mp;                                           |   var tmp = target.health.mp;
+ int smp = self.mp;                                             |   var smp = self.health.mp;
+
+ if(self.bdefend>0&&frame(self.num,110,111)&&range(0,80,dist)&& |   if(self.health.bdefend>0&&frame(self.uid,110,111)&&range(0,80,
+ //no mp combo                                                      //no mp combo
+ if (dist >= 0 && target.state == 12 && styd > 60 && styd < 90) |   if (dist >= 0 && target.state() == 12 && styd > 60 && styd < 9
+  if (self.state <= 1){if (stxd > 0){left();}else {right();}ret |    if (self.state() <= 1){if (stxd > 0){controller.keypress('lef
+  else if (self.state == 2){A();return 1;}                      |    else if (self.state() == 2){controller.keypress('att');return
+ }//grab combo                                                      }//grab combo
+ if (self.frame == 121 && self.ctimer < 50){DdA();}             |   if (self.frame.N == 121 && self.AI.ctimer() < 50){controller.k
+  //blasts                                                           //blasts
+ if (target.id!=8&&dist >= 600 && stzd <= 40 && self.state <= 1 |   if (target.id!=8&&dist >= 600 && stzd <= 40 && self.state() <=
+ else if (dist > 700 && stzd <= 40 && self.frame >= 240 && self |   else if (dist > 700 && stzd <= 40 && self.frame.N >= 240 && se
+ else if (self.frame >= 240 && self.frame <= 264){return 1;}    |   else if (self.frame.N >= 240 && self.frame.N <= 264){return 1;
+ //combo breaker                                                    //combo breaker
+ if (stzd < 10 && dist < 75 && dist >= -5 && target.y == 0 && ( |   if (stzd < 10 && dist < 75 && dist >= -5 && target.ps.y == 0 &
+  if (smp >= 225 && self.frame != 111){DuA();}else if (smp >= 7 |    if (smp >= 225 && self.frame.N != 111){controller.keyseq(['de
+ }//flip                                                            }//flip
+ else if (self.state == 12){                                    |   else if (self.state() == 12){
+  if (target.frame == 301 || (target.frame >= 290 && target.fra |    if (target.frame.N == 301 || (target.frame.N >= 290 && target
+ }//dash, roll                                                      }//dash, roll
+ else if (self.frame == 215 && self.bdefend >= 20){             |   else if (self.frame.N == 215 && self.health.bdefend >= 20){
+  if (dist > 0 && target.frame < 290 && target.frame > 293){J() |    if (dist > 0 && target.frame.N < 290 && target.frame.N > 293)
+ }                                                                  }
+ //facing                                                           //facing
+ if (bfac != 0 && self.state == 7 && stzd < 10 && target.y == 0 |   if (bfac != 0 && self.state() == 7 && stzd < 10 && target.ps.y
+  if (sfac < 0){left();}else {right();}//turn                   |    if (sfac < 0){controller.keypress('left');}else {controller.k
+ }                                                                  }
+ else if (stzd < 10 && dist < 0 && self.state != 1 && self.stat |   else if (stzd < 10 && dist < 0 && self.state() != 1 && self.st
+  if (stxd > 0){left();}else {right();}//turn                   |    if (stxd > 0){controller.keypress('left');}else {controller.k
+ }                                                                  }
+ //defending                                                        //defending
+ if (stzd < 10 && self.state != 7 && target.state == 3 && abs(d |   if (stzd < 10 && self.state() != 7 && target.state() == 3 && a
+ else if (stzd < 10 && dist < 70 && dist >= -5){                    else if (stzd < 10 && dist < 70 && dist >= -5){
+  if (target.hp > 0 && target.hp <= 114 && smp >= 225 && target |    if (target.health.hp > 0 && target.health.hp <= 114 && smp >=
+  else if (self.frame == 39 && target.state == 12){J();return 1 |    else if (self.frame.N == 39 && target.state() == 12){controll
+  else if ((self.frame == 278 || self.frame == 279) && tmp >= 2 |    else if ((self.frame.N == 278 || self.frame.N == 279) && tmp 
+  else if ((target.state == 16 || target.state == 8) && smp >=  |    else if ((target.state() == 16 || target.state() == 8) && smp
+  else if (target.state == 16 && self.state == 0 && tmp >= 225) |    else if (target.state() == 16 && self.state() == 0 && tmp >= 
+  else if ((self.frame == 281 || self.frame == 282) && target.s |    else if ((self.frame.N == 281 || self.frame.N == 282) && targ
+   else if (smp >= 100){J();return 1;}else if (stxd > 0){left() |     else if (smp >= 100){controller.keypress('jump');return 1;}e
+  else if (target.hp > 0 && target.state == 12 && styd > 90 &&  |    else if (target.health.hp > 0 && target.state() == 12 && styd
+  else if ((target.frame == 181 || target.frame == 187) && targ |    else if ((target.frame.N == 181 || target.frame.N == 187) && 
+ }                                                                  }
+ //opportunities                                                    //opportunities
+ if (self.state == 5 || self.state == 9 || (self.frame == 292 & |   if (self.state() == 5 || self.state() == 9 || (self.frame.N ==
+  if ((target.hp <= 138 || self.ctimer < 40) && self.state == 9 |    if ((target.health.hp <= 138 || self.AI.ctimer() < 40) && sel
+  else if ((target.hp <= 114 || self.ctimer < 40) && self.state |    else if ((target.health.hp <= 114 || self.AI.ctimer() < 40) &
+  else if (self.ctimer < 40 && self.state == 9 && smp >= 75 &&  |    else if (self.AI.ctimer() < 40 && self.state() == 9 && smp >=
+  else {A();}return 1;}                                         |    else {controller.keypress('att');}return 1;}                 
+  else if (self.frame == 292 || frame(self.num,85,109) || self. |    else if (self.frame.N == 292 || frame(self.uid,85,109) || sel
+ //void unwanted inputs                                         |   //var unwanted inputs
+ if (self.DrA >= 2 || self.DlA >= 2 || self.DuA >= 2 || self.Dd |   if (self.AI.seqcheck(['def','right','att']) >= 2 || self.AI.se
+  if (self.z - target.z < 0){down();}else {up();}               |    if (self.ps.z - target.ps.z < 0){controller.keypress('down');
+ }                                                                  }
+}                                                                  }
+ return 0;                                                          return 0;
+}                                                                  }
+//davisspecials                                                    //davisspecials
+
+void id(){//main function                                       |  function id(){//main function
+//add full object loading sequence                                 //add full object loading sequence
+//create target selection                                          //create target selection
+//create ego wrapper                                               //create ego wrapper
+//create moving functions/approaching/fleeing/waiting              //create moving functions/approaching/fleeing/waiting
+   inputs();                                                          inputs();
+   array<array<int>>o=get_objects();                            |     var o=get_objects();
+   if(stage_clear){right();down();}                             |     if(stage_clear){controller.keypress('right');controller.keyp
+   else if(stall(o[0][0]))return;                                     else if(stall(o[0][0]))return;
+   else if(rebound(o[0][0]))return;                                   else if(rebound(o[0][0]))return;
+   else if(dodge(o[0]))return;                                        else if(dodge(o[0]))return;
+                                                                      
+   if(is_opponent(o[1][0])){                                          if(is_opponent(o[1][0])){
+      loadTarget(o[1][0]);                                               loadTarget(o[1][0]);
+      if(ego()==0&&target.hp>0){                                |        if(ego()==0&&target.health.hp>0){
+         approach_opponent(o[1][0]);                                        approach_opponent(o[1][0]);
+         if(rand(22)+1>10*(difficulty))act(o[1][0]);                        if(rand(22)+1>10*(difficulty))act(o[1][0]);
+      }                                                                  }
+   }                                                                  }
+}                                                                  }
+
+//oldstuff                                                         //oldstuff
+bool facing_against(){                                          |  function facing_against(){
+   //true if self and target face opposite directions                 //true if self and target face opposite directions
+   //add variable objects                                             //add variable objects
+   return (self.facing!=target.facing)?true:false;              |     return (self.AI.facing()!=target.AI.facing())?true:false;
+}                                                                  }
+void DfA(){                                                     |  function DfA(){
+   if(xdistance(self.num,target.num) > 0){DrA();}               |     if(xdistance(self.uid,target.uid) > 0){controller.keyseq(['d
+   else{DlA();}                                                 |     else{controller.keyseq(['def','left','att']);}
+}                                                                  }
+bool frame(int i, int min, int max){                            |  function frame(i,min,max){
+   //true if between min and max                                      //true if between min and max
+   if(!is_object(i)){return false;}                                   if(!is_object(i)){return false;}
+   return range(min,max,target.frame);                          |     return range(min,max,target.frame.N);
+}                                                                  }
+void act(int o){                                                |  function act(o){
+  if(target.state!=14&&target.blink==0){                        |    if(target.state()!=14&&target.AI.blink()==0){
+   //special moves, attacking, jumping, picking, combos, etc, .       //special moves, attacking, jumping, picking, combos, etc, .
+   if(target.state!=3&&target.state!=2&&target.frame!=213&&rang |     if(target.state()!=3&&target.state()!=2&&target.frame.N!=213
+         if(self.state<=1){run();}                              |           if(self.state()<=1){run();}
+         else if(self.state==2){J();A();}                       |           else if(self.state()==2){controller.keypress('jump');c
+   }                                                                  }
+   else if(opponent_close(o)){attack();}                              else if(opponent_close(o)){attack();}
+  }                                                                  }
+}                                                                  }
+bool opponent_close(int i){                                     |  function opponent_close(i){
+   //true if opponent in range                                        //true if opponent in range
+   //pass object number and ranges                                    //pass object number and ranges
+   return (loadTarget(i)==0&&range(0,80,abs(xdistance(self.num, |     return (loadTarget(i)==0&&range(0,80,abs(xdistance(self.uid,
+}                                                                  }
+void attack(){                                                  |  function attack(){
+   //attack towards target                                            //attack towards target
+   if(facing_distance(self.num,target.num)>0){turn();}          |     if(facing_distance(self.uid,target.uid)>0){turn();}
+   if(target.state==16){DdA();}                                 |     if(target.state()==16){controller.keyseq(['def','down','att'
+   else{A(1,0);}                                                |     else{controller.keypress('att',1,0);}
+}                                                                  }
+int facing_distance(int s, int t){                              |  function facing_distance(s,t){
+   //positive: target distance to the front                           //positive: target distance to the front
+   return xdistance(s,t)*(2*(self.facing?1:0)-1);               |     return xdistance(s,t)*(2*(self.AI.facing()?1:0)-1);
+}                                                                  }
+void approach_opponent(int o){                                  |  function approach_opponent(o){
+   //approach opponent, be aware of item?                             //approach opponent, be aware of item?
+   if(is_opponent(o)&&(target.state==14||target.blink!=0)){     |     if(is_opponent(o)&&(target.state()==14||target.AI.blink())){
+          if(target.id==4||target.id==5){move_towards(o);}                   if(target.id==4||target.id==5){move_towards(o);}
+      else{move_away(o);}                                                else{move_away(o);}
+   }                                                                  }
+   else if(!range(0,5,abs(zdistance(self.num,o)))||!range(0,65, |     else if(!range(0,5,abs(zdistance(self.uid,o)))||!range(0,65,
+      if(self.state<=1&&!range(0,300,abs(xdistance(self.num,o)) |        if(self.state()<=1&&!range(0,300,abs(xdistance(self.uid,o
+      else if(self.state<=1&&!range(0,80,abs(xdistance(self.num |        else if(self.state()<=1&&!range(0,80,abs(xdistance(self.u
+          else{move_towards(o);}                                             else{move_towards(o);}
+   }                                                                  }
+}                                                                  }
+void run(){                                                     |  function run(){
+   //run forward                                                      //run forward
+   if(self.facing==false){right(1,0);}else{left(1,0);}          |     if(self.AI.facing()==false){controller.keypress('right',1,0)
+}                                                               <
+bool facing_towards(){                                          <
+   //true if self faces target                                  <
+   //add variable objects                                       <
+   return ((self.facing?-1:1)*xdistance(self.num,target.num)>0) <
+}                                                                  }
+void move_above(int i){                                         |  function move_above(i){
+   //walk above target i                                              //walk above target i
+   //add desired x and z distances                                    //add desired x and z distances
+   if(!range(0,10+abs(self.x_velocity),abs(xdistance(self.num,i |     if(!range(0,10+abs(self.ps.vx),abs(xdistance(self.uid,i)))){
+      if(xdistance(self.num,i)<0){left(1,1);}else{right(1,1);}  |        if(xdistance(self.uid,i)<0){controller.keypress('left',1,
+   }                                                                  }
+   if(range(0,30+abs(self.z_velocity),abs(zdistance(self.num,i) |     if(range(0,30+abs(self.ps.vz),abs(zdistance(self.uid,i)))){
+      if(zdistance(self.num,i)<0){down(1,1);}else{up(1,1);}     |        if(zdistance(self.uid,i)<0){controller.keypress('down',1,
+   }                                                                  }
+}                                                                  }
+void move_away(int i){                                          |  function move_away(i){
+   //walk away from target i                                          //walk away from target i
+   //add desired x and z distances                                    //add desired x and z distances
+      if(xdistance(self.num,i)<0){right(1,1);}else{left(1,1);}  |        if(xdistance(self.uid,i)<0){controller.keypress('right',1
+      if(zdistance(self.num,i)<0){down(1,1);}else{up(1,1);}     |        if(zdistance(self.uid,i)<0){controller.keypress('down',1,
+}                                                                  }
+void move_towards(int i){                                       |  function move_towards(i){
+   //walk towards target i                                            //walk towards target i
+   //add desired x and z distances                                    //add desired x and z distances
+   if(!range(0,60+18*(difficulty-2)+abs(self.x_velocity),abs(xd |     if(!range(0,60+18*(difficulty-2)+abs(self.ps.vx),abs(xdistan
+      if(xdistance(self.num,i)<0){left(1,1);}else{right(1,1);}  |        if(xdistance(self.uid,i)<0){controller.keypress('left',1,
+   }                                                                  }
+   if(!range(0,10+abs(self.z_velocity),abs(zdistance(self.num,i |     if(!range(0,10+abs(self.ps.vz),abs(zdistance(self.uid,i)))){
+      if(zdistance(self.num,i)<0){up(1,1);}else{down(1,1);}     |        if(zdistance(self.uid,i)<0){controller.keypress('up',1,1)
+   }                                                                  }
+}                                                                  }
+bool range(int min, int max, int i){                            |  function range(min,max,i){
+   //true if i is between min and max                                 //true if i is between min and max
+   //make frame use the same form                                     //make frame use the same form
+   return (i>=min&&i<=max)?true:false;                                return (i>=min&&i<=max)?true:false;
+}                                                                  }
+int xdistance(int s, int t){                                    |  function xdistance(s,t){
+   //x distance between s and t                                       //x distance between s and t
+   loadTarget(s);                                                     loadTarget(s);
+   int sx=target.x;                                             |     var sx=target.ps.x;
+   loadTarget(t);                                                     loadTarget(t);
+   int tx=target.x;                                             |     var tx=target.ps.x;
+   return tx-sx;                                                      return tx-sx;
+}                                                                  }
+int zborder1(int z){                                            |  function zborder1(z){
+   //z distance to the top                                            //z distance to the top
+   return z-bg_zwidth1;                                               return z-bg_zwidth1;
+}                                                                  }
+int zborder2(int z){                                            |  function zborder2(z){
+   //z distance to the bottom                                         //z distance to the bottom
+   return bg_zwidth2-z;                                               return bg_zwidth2-z;
+}                                                                  }
+int zdistance(int s, int t){                                    |  function zdistance(s,t){
+   //z distance between s and t                                       //z distance between s and t
+   loadTarget(s);                                                     loadTarget(s);
+   int sz=target.z;                                             |     var sz=target.ps.z;
+   loadTarget(t);                                                     loadTarget(t);
+   int tz=target.z;                                             |     var tz=target.ps.z;
+   return tz-sz;                                                      return tz-sz;
+}                                                                  }
+//oldstuff                                                         //oldstuff
+
+void defend(int i){//turn against i and defend                  |  function defend(i){//turn against i and defend
+   if(!facing_against(i)){turn();}                                    if(!facing_against(i)){turn();}
+   D(1,0);                                                      |     controller.keypress('def',1,0);
+}                                                                  }
+
+void forward(){//press forward direction                        |  function forward(h){//press forward direction
+   forward(1);                                                  |     if(h===undefined) h=1;
+}                                                               |     if(self.AI.facing()){controller.keypress('left',1,h);}else{c
+void forward(int h){//press forward direction                   <
+   if(self.facing){left(1,h);}else{right(1,h);}                 <
+}                                                                  }
+
+void towards(int i){//move towards object i                     |  function towards(i,h){//move towards object i
+   towards(i,1);                                                |     if(h===undefined) h=1;
+}                                                               <
+void towards(int i, int h){//move towards object i              <
+   if(facing_towards(i)){forward(h);}else{turn();}                    if(facing_towards(i)){forward(h);}else{turn();}
+   if(self.z<game.objects[i].z)down(1,h);                       |     if(self.ps.z<game_objects[i].ps.z)controller.keypress('down'
+   else if(self.z>game.objects[i].z)up(1,h);                    |     else if(self.ps.z>game_objects[i].ps.z)controller.keypress('
+}                                                                  }
+
+void inputs(){//void inputs                                     |  function inputs(){//var inputs
+   up(0,0);down(0,0);left(0,0);right(0,0);D(0,0);J(0,0);A(0,0); |     controller.keypress('up',0,0);controller.keypress('down',0,0
+}                                                                  }
+
+void turn(){//press opposite direction                          |  function turn(){//press opposite direction
+   if(self.facing){right(1,0);}else{left(1,0);}                 |     if(self.AI.facing()){controller.keypress('right',1,0);}else{
+}                                                                  }
+
+bool dodge(int[] i){//dodge attack                              |  function dodge(i){//dodge attack
+   if(!is_reboundable(i[0])&&i[1]>=dodge_time(i)&&i[3]!=-1){          if(!is_reboundable(i[0])&&i[1]>=dodge_time(i)&&i[3]!=-1){
+      if(is_chase(i[0])){towards(i[0],0);return true;}                   if(is_chase(i[0])){towards(i[0],0);return true;}
+      if((i[3]<self.z||i[3]<=bg_zwidth1+15)&&i[3]<=bg_zwidth2-1 |        if((i[3]<self.ps.z||i[3]<=bg_zwidth1+15)&&i[3]<=bg_zwidth
+      else up();                                                |        else controller.keypress('up');
+          return true;                                                       return true;
+   }                                                                  }
+   return false;                                                      return false;
+}                                                                  }
+
+bool facing_against(int i){//check if facing against i          |  function facing_against(i){//check if facing against i
+   if(has_direction(i))return (self.facing!=game.objects[i].fac |     if(has_direction(i))return (self.AI.facing()!=game_objects[i
+   return facing_towards(i);                                          return facing_towards(i);
+}                                                                  }
+
+bool facing_towards(int i){//true if self faces target          |  function facing_towards(i){//true if self faces target
+   return ((self.facing?-1:1)*(self.x-game.objects[i].x)<0)?tru |     if( i===undefined)
+                                                                >       //true if self faces target
+                                                                >       //add variable objects
+                                                                >       return ((self.AI.facing()?-1:1)*xdistance(self.uid,target.
+                                                                >     else   
+                                                                >       return ((self.AI.facing()?-1:1)*(self.ps.x-game_objects[i]
+}                                                                  }
+
+bool has_direction(int i){//true if the object has an attack re |  function has_direction(i){//true if the object has an attack re
+   if(game.objects[i].throwinjury!=0||game.objects[i].data.fram |     if(game_objects[i].caught_throwinjury||game_objects[i].AI.fr
+   return true;                                                       return true;
+}                                                                  }
+
+bool has_gravity(int i){//true if a character i has gravity     |  function has_gravity(i){//true if a character i has gravity
+//add other object types - return gravity value instead            //add other object types - return gravity value instead
+   return is_character(i)&&game.objects[i].y<0;                 |     return is_character(i)&&game_objects[i].ps.y<0;
+}                                                                  }
+
+bool intersect(int[] a, int[] b){//check if spaces a and b inte |  function intersect(a,b){//check if spaces a and b intersect
+ if(a[1]<b[0]||                                                     if(a[1]<b[0]||
+  b[1]<a[0]||                                                        b[1]<a[0]||
+  a[2]>b[3]||                                                        a[2]>b[3]||
+  b[2]>a[3]||                                                        b[2]>a[3]||
+  a[4]>b[5]||                                                        a[4]>b[5]||
+  b[4]>a[5]||                                                        b[4]>a[5]||
+  (a[0]==a[1]&&a[1]==a[2]&&a[2]==a[3]&&a[3]==a[4]&&a[4]==a[5])|      (a[0]==a[1]&&a[1]==a[2]&&a[2]==a[3]&&a[3]==a[4]&&a[4]==a[5])|
+  (b[0]==b[1]&&b[1]==b[2]&&b[2]==b[3]&&b[3]==b[4]&&b[4]==b[5]))      (b[0]==b[1]&&b[1]==b[2]&&b[2]==b[3]&&b[3]==b[4]&&b[4]==b[5]))
+ return true;                                                       return true;
+}                                                                  }
+
+bool is_character(int i){//true if i is a character             |  function is_character(i){//true if i is a character
+   return (is_object(i)&&game.objects[i].data.type==0)?true:fal |     return (is_object(i)&&game_objects[i].AI.type()==0)?true:fal
+}                                                                  }
+
+bool is_chase(int i){//true if i is a chase                     |  function is_chase(i){//true if i is a chase
+   if(!is_character(i)&&(game.objects[i].data.frames[game.objec |     if(!is_character(i)&&(game_objects[i].AI.frame(game_objects[
+      game.objects[i].data.frames[game.objects[i].frame1].hit_F |        game_objects[i].AI.frame(game_objects[i].AI.frame1()).hit
+          game.objects[i].data.frames[game.objects[i].frame1].h |            game_objects[i].AI.frame(game_objects[i].AI.frame1())
+          game.objects[i].data.frames[game.objects[i].frame1].h |            game_objects[i].AI.frame(game_objects[i].AI.frame1())
+          game.objects[i].data.frames[game.objects[i].frame1].h |            game_objects[i].AI.frame(game_objects[i].AI.frame1())
+          game.objects[i].data.frames[game.objects[i].frame1].h |            game_objects[i].AI.frame(game_objects[i].AI.frame1())
+          game.objects[i].data.frames[game.objects[i].frame1].h |            game_objects[i].AI.frame(game_objects[i].AI.frame1())
+   return false;                                                      return false;
+}                                                                  }
+
+bool is_object(int i){//true if i is an object                  |  function is_object(i){//true if i is an object
+   return game.exists[i];                                       |     return game_objects[i];
+}                                                                  }
+
+bool is_opponent(int i){//true if i is a character              |  function is_opponent(i){//true if i is a character
+   return (is_character(i)&&game.objects[i].hp>0&&game.objects[ |     return (is_character(i)&&game_objects[i].health.hp>0&&game_o
+}                                                                  }
+
+bool is_reboundable(int i){//true if i is reboundable           |  function is_reboundable(i){//true if i is reboundable
+   return (is_object(i)&&!is_character(i)&&game.objects[i].data |     return (is_object(i)&&!is_character(i)&&game_objects[i].AI.f
+}                                                                  }
+
+bool is_stoppable(int i){//true if i is reboundable             |  function is_stoppable(i){//true if i is reboundable
+   return (is_object(i)&&!is_character(i)&&game.objects[i].data |     return (is_object(i)&&!is_character(i)&&game_objects[i].AI.f
+}                                                                  }
+
+bool rebound(int i){//stop/rebound projectiles                  |  function rebound(i){//stop/rebound projectiles
+//pass on attack array                                             //pass on attack array
+//replace time_till_impact with loaded object parameters           //replace time_till_impact with loaded object parameters
+//create attack() function and item picking check                  //create attack() function and item picking check
+   //difficulty barrier                                               //difficulty barrier
+   if(rand(difficult2(0))>3)return false;                             if(rand(difficult2(0))>3)return false;
+   //reboundable without risk                                         //reboundable without risk
+   if(is_stoppable(i)&&                                               if(is_stoppable(i)&&
+   time_till_impact(i, self.num)>attack_startup(self.num,self.f |     time_till_impact(i, self.uid)>attack_startup(self.uid,self.f
+   time_till_impact(self.num, get_attack_frame(self.num,self.fr |     time_till_impact(self.uid, get_attack_frame(self.uid,self.fr
+      A();return true;                                          |        controller.keypress('att');return true;
+   }                                                                  }
+   return false;                                                      return false;
+}                                                                  }
+
+bool stall(int i){//minimize damage                             |  function stall(i){//minimize damage
+//pass on attack array                                             //pass on attack array
+//replace time_till_impact with loaded object parameters           //replace time_till_impact with loaded object parameters
+   //difficulty barrier                                               //difficulty barrier
+   if(rand(difficult2(0))>3)return false;                             if(rand(difficult2(0))>3)return false;
+   //always flip to avoid throwinjury                                 //always flip to avoid throwinjury
+   if(game.objects[self.num].throwinjury!=0&&(self.frame==182|| |     if(game_objects[self.uid].throwinjury&&(self.frame.N==182||s
+   else if(!is_object(i))return false;                                else if(!is_object(i))return false;
+   //determine reaction speed                                         //determine reaction speed
+   if(time_till_impact(i, self.num)<=difficult(1)){             |     if(time_till_impact(i, self.uid)<=difficult(1)){
+      //defend or roll                                                   //defend or roll
+      if(self.state<=2||self.frame==215){defend(i);return true; |        if(self.state()<=2||self.frame.N==215){defend(i);return t
+          //flip                                                             //flip
+      if(self.frame==182||self.frame==188){J();return true;}    |        if(self.frame.N==182||self.frame.N==188){controller.keypr
+   }                                                                  }
+   return false;                                                      return false;
+}                                                                  }
+
+int attack_startup(int o, int f){//time it takes to perform a b |  function attack_startup(o,f){//time it takes to perform a basic
+   int t=0;                                                     |     var t=0;
+   if(get_attack_start(o,f)!=-1){                                     if(get_attack_start(o,f)!=-1){
+      for(int i = get_attack_start(o,f); i < 400; i=game.object |        for(var i = get_attack_start(o,f); i < 400; i=game_object
+             t+=game.objects[o].data.frames[i].wait;            |               t+=game_objects[o].AI.frame(i).wait;
+                 if(game.objects[o].data.frames[i].itr_count>0& |                   if(game_objects[o].AI.frame(i).itr_count>0&&ga
+                    return t;                                                          return t;
+             }                                                                  }
+          }                                                                  }
+   }                                                                  }
+   return 31;                                                         return 31;
+}                                                                  }
+
+int difficult(int i){//translate difficulty into values: 0,2,4, |  function difficult(i){//translate difficulty into values: 0,2,4
+   return 2*difficulty+2+i;                                           return 2*difficulty+2+i;
+}                                                                  }
+int difficult2(int i){//translate difficulty into values: 0,4,1 |  function difficult2(i){//translate difficulty into values: 0,4,
+   return difficult(i)*difficult(i);                                  return difficult(i)*difficult(i);
+}                                                                  }
+
+int dodge_time(int[] i){//returns time it takes to dodge        |  function dodge_time(i){//returns time it takes to dodge
+//somewhat imprecise, more z speeds to add                         //somewhat imprecise, more z speeds to add
+   float z=game.objects[self.num].data.frames[self.frame].dvz;  |     var z=game_objects[self.uid].AI.frame(self.frame.N).dvz;
+   if(self.state<2)z=game.objects[self.num].data.walking_speedz |     if(self.state()<2)z=game_objects[self.uid].data.bmp.walking_
+   else if(self.state==2)z=game.objects[self.num].data.running_ |     else if(self.state()==2)z=game_objects[self.uid].data.bmp.ru
+   for(int t = 0; t < 31; ++t){                                 |     for(var t = 0; t < 31; ++t){
+      if(self.z+z*4*t>i[3]+i[2])return t;                       |        if(self.ps.z+z*4*t>i[3]+i[2])return t;
+      if(self.z-z*4*t<i[3]-i[2])return t;                       |        if(self.ps.z-z*4*t<i[3]-i[2])return t;
+   }                                                                  }
+   return 31;                                                         return 31;
+}                                                                  }
+
+int get_attack_frame(int o, int f){//get attack frame for objec |  function get_attack_frame(o,f){//get attack frame for object o 
+   if(get_attack_start(o,f)!=-1){                                     if(get_attack_start(o,f)!=-1){
+      for(int i = get_attack_start(o,f); i < 400; i=game.object |        for(var i = get_attack_start(o,f); i < 400; i=game_object
+                 if(game.objects[o].data.frames[i].itr_count>0& |                   if(game_objects[o].AI.frame(i).itr_count>0&&ga
+                    return i;                                                          return i;
+             }                                                                  }
+          }                                                                  }
+   }                                                                  }
+   return 0;                                                          return 0;
+}                                                                  }
+
+int get_attack_start(int o, int f){//get attack start for objec |  function get_attack_start(o,f){//get attack start for object o 
+//include random frame 65, super punch 70, weapon attacks          //include random frame 65, super punch 70, weapon attacks
+   if(game.objects[o].weapon_type==0){                          |     if(game_objects[o].AI.weapon_type()==0){
+      if(game.objects[o].data.frames[f].state<=1)return 60;     |        if(game_objects[o].AI.frame(f).state<=1)return 60;
+      else if(game.objects[o].data.frames[f].state==2)return 85 |        else if(game_objects[o].AI.frame(f).state==2)return 85;
+      else if(game.objects[o].data.frames[f].state==4)return 80 |        else if(game_objects[o].AI.frame(f).state==4)return 80;
+      else if(game.objects[o].data.frames[f].state==5)return 90 |        else if(game_objects[o].AI.frame(f).state==5)return 90;
+   }                                                                  }
+   return -1;                                                         return -1;
+}                                                                  }
+
+int square_distance(int i, int o){//returns squared distance be |  function square_distance(i,o){//returns squared distance betwee
+   return(                                                            return(
+   ((game.objects[i].x-game.objects[o].x)*(game.objects[i].x-ga |     ((game_objects[i].ps.x-game_objects[o].ps.x)*(game_objects[i
+   +((game.objects[i].y-game.objects[o].y)*(game.objects[i].y-g |     +((game_objects[i].ps.y-game_objects[o].ps.y)*(game_objects[
+   +3*((game.objects[i].z-game.objects[o].z)*(game.objects[i].z |     +3*((game_objects[i].ps.z-game_objects[o].ps.z)*(game_object
+}                                                                  }
+
+int time_till_impact(int o, int x){//returns time till impact o |  function time_till_impact(o,fo,x,fx){//returns time till impact
+//remove when replaced with get_attack_info                     |     if( x===undefined && fx===undefined)
+   return time_till_impact(o, game.objects[o].frame1 ,x ,game.o |     {
+}                                                               |         x=fo;
+int time_till_impact(int o, int fo, int x, int fx){//returns ti |         fo=game_objects[o].AI.frame1();
+                                                                >         fx=game_objects[x].AI.frame1();
+                                                                >     }
+//remove when replaced with get_attack_info                        //remove when replaced with get_attack_info
+   if(fo==-1)fo=game.objects[o].frame1;                         |     if(fo==-1)fo=game_objects[o].AI.frame1();
+   if(fx==-1)fx=game.objects[x].frame1;                         |     if(fx==-1)fx=game_objects[x].AI.frame1();
+   if(is_object(x)&&o!=x&&is_object(o)){                              if(is_object(x)&&o!=x&&is_object(o)){
+      if(game.objects[x].data.frames[fx].bdy_count>0&&game.obje |        if(game_objects[x].AI.frame(fx).bdy_count>0&&game_objects
+         for(int i = 0; i < game.objects[o].data.frames[fo].itr |           for(var i = 0; i < game_objects[o].AI.frame(fo).itr_co
+                if((game.objects[o].team!=game.objects[x].team| |                  if((game_objects[o].team!=game_objects[x].team|
+                           (self.state!=12||game.objects[o].dat |                             (self.state()!=12||game_objects[o].A
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                       game.objects[o].data.frames[fo].itrs[i]. |                         game_objects[o].AI.frame(fo).itrs[i].kin
+                           (game.objects[o].throwinjury!=0||    |                             (game_objects[o].throwinjury||
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           (game.objects[game.objects[o].weapon |                             ((game_objects[o].AI.weapon_holder()
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+               for(int j = 0; j < game.objects[x].data.frames[f |                 for(var j = 0; j < game_objects[x].AI.frame(fx).
+                  for(int t = 0; t < 31; ++t){                  |                    for(var t = 0; t < 31; ++t){
+                         if(intersect(bdy(x,j,fx,t),itr(o,i,fo,                             if(intersect(bdy(x,j,fx,t),itr(o,i,fo,
+                              }                                                                  }
+                           }                                                                  }
+            }                                                                  }
+         }                                                                  }
+      }                                                                  }
+   }                                                                  }
+   return 31;                                                         return 31;
+}                                                                  }
+
+int[] bdy(int o, int i, int f, int t){//get bdy i of object o i |  function bdy(o,i,f,t){//get bdy i of object o in frame f at tim
+   array<int>r={0,0,0,0,0,0};                                   |     var r=[0,0,0,0,0,0];
+   if(game.objects[o].data.frames[f].bdy_count>i){              |     if(game_objects[o].AI.frame(f).bdy_count>i){
+      r[game.objects[o].facing?1:0]= game.objects[o].x +(game.o |        r[game_objects[o].AI.facing()?1:0]= game_objects[o].ps.x 
+      r[game.objects[o].facing?0:1]= game.objects[o].x +(game.o |        r[game_objects[o].AI.facing()?0:1]= game_objects[o].ps.x 
+      r[0]+=game.objects[o].x_velocity*t;                       |        r[0]+=game_objects[o].ps.vx*t;
+      r[1]+=game.objects[o].x_velocity*t;                       |        r[1]+=game_objects[o].ps.vx*t;
+      r[2]=game.objects[o].y+game.objects[o].data.frames[f].bdy |        r[2]=game_objects[o].ps.y+game_objects[o].AI.frame(f).bdy
+      r[3]=game.objects[o].y+game.objects[o].data.frames[f].bdy |        r[3]=game_objects[o].ps.y+game_objects[o].AI.frame(f).bdy
+      r[2]+=game.objects[o].y_velocity*t+(has_gravity(o)?1.7:0) |        r[2]+=game_objects[o].ps.vy*t+(has_gravity(o)?1.7:0)*t;
+      r[3]+=game.objects[o].y_velocity*t+(has_gravity(o)?1.7:0) |        r[3]+=game_objects[o].ps.vy*t+(has_gravity(o)?1.7:0)*t;
+      r[4]=game.objects[o].z +game.objects[o].z_velocity*t;     |        r[4]=game_objects[o].ps.z +game_objects[o].ps.vz*t;
+      r[5]=game.objects[o].z +game.objects[o].z_velocity*t;     |        r[5]=game_objects[o].ps.z +game_objects[o].ps.vz*t;
+   }                                                                  }
+   return r;                                                          return r;
+}                                                                  }
+
+int[] get_attack_info(int o, int x){                            |  function get_attack_info(o,fo,x,fx){
+   return get_attack_info(o, game.objects[o].frame1 ,x ,game.ob |     if( x===undefined && fx===undefined)
+}                                                               |     {
+int[] get_attack_info(int o, int fo, int x, int fx){            |         x=fo;
+   array<int>a={31,0,-1,14};                                    |         fo=game_objects[o].AI.frame1();
+   if(fo==-1)fo=game.objects[o].frame1;                         |         fx=game_objects[x].AI.frame1();
+   if(fx==-1)fx=game.objects[x].frame1;                         |     }
+                                                                >     var a=[31,0,-1,14];
+                                                                >     if(fo==-1)fo=game_objects[o].AI.frame1();
+                                                                >     if(fx==-1)fx=game_objects[x].AI.frame1();
+   if(is_object(x)&&o!=x&&is_object(o)){                              if(is_object(x)&&o!=x&&is_object(o)){
+      if(game.objects[x].data.frames[fx].bdy_count>0&&game.obje |        if(game_objects[x].AI.frame(fx).bdy_count>0&&game_objects
+         for(int i = 0; i < game.objects[o].data.frames[fo].itr |           for(var i = 0; i < game_objects[o].AI.frame(fo).itr_co
+                if((game.objects[o].team!=game.objects[x].team| |                  if((game_objects[o].team!=game_objects[x].team|
+                           (self.state!=12||game.objects[o].dat |                             (self.state()!=12||game_objects[o].A
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                       game.objects[o].data.frames[fo].itrs[i]. |                         game_objects[o].AI.frame(fo).itrs[i].kin
+                           (game.objects[o].throwinjury!=0||    |                             (game_objects[o].throwinjury||
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           (game.objects[game.objects[o].weapon |                             ((game_objects[o].AI.weapon_holder()
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+                           game.objects[o].data.frames[fo].itrs |                             game_objects[o].AI.frame(fo).itrs[i]
+               for(int j = 0; j < game.objects[x].data.frames[f |                 for(var j = 0; j < game_objects[x].AI.frame(fx).
+                  for(int t = 0; t < 31; ++t){                  |                    for(var t = 0; t < 31; ++t){
+                         if(intersect(bdy(x,j,fx,t),itr(o,i,fo,                             if(intersect(bdy(x,j,fx,t),itr(o,i,fo,
+                                            a[0]=t;                                                            a[0]=t;
+                                                a[1]=game.objec |                                                  a[1]=game_objec
+                                                a[2]=game.objec |                                                  a[2]=game_objec
+                                                if(game.objects |                                                  if(game_objects
+                                                return a;                                                          return a;
+                                         }                                                                  }
+                              }                                                                  }
+                           }                                                                  }
+            }                                                                  }
+         }                                                                  }
+      }                                                                  }
+   }                                                                  }
+   return a;                                                          return a;
+}                                                                  }
+
+int[][] get_objects(){//find all essential object numbers and p |  function get_objects(){//find all essential object numbers and 
+//add more required parameters                                     //add more required parameters
+   array<array<int>>o={                                         |     var o=[
+   {-1,31,-1,-1,14},                                            |     [-1,31,-1,-1,14],
+   {-1,2147483647},                                             |     [-1,2147483647],
+   {-1,2147483647},                                             |     [-1,2147483647],
+   {-1,2147483647},                                             |     [-1,2147483647],
+   };                                                           |     ];
+   //0,0: object first to hit                                         //0,0: object first to hit
+   array<int>a={31,-1,-1,14};                                   |     var a=[31,-1,-1,14];
+   //0,1: time till it hits                                           //0,1: time till it hits
+   //0,2: injury                                                      //0,2: injury
+   //0,3: z at impact                                                 //0,3: z at impact
+   //0,4: zwidth-1                                                    //0,4: zwidth-1
+   //1,0: closest opponent                                            //1,0: closest opponent
+   //1,1: closest opponent distance                                   //1,1: closest opponent distance
+   //2,0: second closest opponent                                     //2,0: second closest opponent
+   //2,1: second closest opponent distance                            //2,1: second closest opponent distance
+   //3,0: weakest opponent                                            //3,0: weakest opponent
+   //3,1: weakest opponent distance                                   //3,1: weakest opponent distance
+   //4: closest boss                                                  //4: closest boss
+   //5: closest item                                                  //5: closest item
+   //6: closest milk                                                  //6: closest milk
+   //7: closest beer                                                  //7: closest beer
+   //8: command frame                                                 //8: command frame
+   for (int i=0;i<400;++i){                                     |     for (var i in game_objects){
+      if(is_object(i)){                                                  if(is_object(i)){
+             a=get_attack_info(i,self.num);                     |               a=get_attack_info(i,self.uid);
+         if(a[0]<o[0][1]){o[0][0]=i;o[0][1]=a[0];o[0][2]=a[1];o             if(a[0]<o[0][1]){o[0][0]=i;o[0][1]=a[0];o[0][2]=a[1];o
+         else if(a[0]==o[0][1]&&a[1]<o[0][2]){o[0][0]=i;o[0][1]             else if(a[0]==o[0][1]&&a[1]<o[0][2]){o[0][0]=i;o[0][1]
+                 if(is_opponent(i)&&square_distance(self.num,i) |                   if(is_opponent(i)&&square_distance(self.uid,i)
+                 else if(is_opponent(i)&&square_distance(self.n |                   else if(is_opponent(i)&&square_distance(self.u
+                 if(is_opponent(i)&&game.objects[i].hp<o[3][1]) |                   if(is_opponent(i)&&game_objects[i].health.hp<o
+                 else if(is_opponent(i)&&game.objects[i].hp==o[ |                   else if(is_opponent(i)&&game_objects[i].health
+      }                                                                  }
+   }                                                                  }
+   return o;                                                          return o;
+}                                                                  }
+
+int[] itr(int o, int i, int f, int t){//get itr i of object o i |  function itr(o,i,f,t){//get itr i of object o in frame f at tim
+   array<int>r={0,0,0,0,0,0};                                   |     var r=[0,0,0,0,0,0];
+   if(game.objects[o].data.frames[f].itr_count>i){              |     if(game_objects[o].AI.frame(f).itr_count>i){
+      r[game.objects[o].facing?1:0]= game.objects[o].x +(game.o |        r[game_objects[o].AI.facing()?1:0]= game_objects[o].ps.x 
+      r[game.objects[o].facing?0:1]= game.objects[o].x +(game.o |        r[game_objects[o].AI.facing()?0:1]= game_objects[o].ps.x 
+      r[0]+=game.objects[o].x_velocity*t;                       |        r[0]+=game_objects[o].ps.vx*t;
+      r[1]+=game.objects[o].x_velocity*t;                       |        r[1]+=game_objects[o].ps.vx*t;
+      r[2]=game.objects[o].y+game.objects[o].data.frames[f].itr |        r[2]=game_objects[o].ps.y+game_objects[o].AI.frame(f).itr
+      r[3]=game.objects[o].y+game.objects[o].data.frames[f].itr |        r[3]=game_objects[o].ps.y+game_objects[o].AI.frame(f).itr
+      r[2]+=game.objects[o].y_velocity*t+(has_gravity(o)?1.7:0) |        r[2]+=game_objects[o].ps.vy*t+(has_gravity(o)?1.7:0)*t;
+      r[3]+=game.objects[o].y_velocity*t+(has_gravity(o)?1.7:0) |        r[3]+=game_objects[o].ps.vy*t+(has_gravity(o)?1.7:0)*t;
+      int z=game.objects[o].data.frames[f].itrs[i].zwidth;      |        var z=game_objects[o].AI.frame(f).itrs[i].zwidth;
+      if(z==0)z=14;                                                      if(z==0)z=14;
+      r[4]=game.objects[o].z-z +game.objects[o].z_velocity*t;   |        r[4]=game_objects[o].ps.z-z +game_objects[o].ps.vz*t;
+      r[5]=game.objects[o].z+z +game.objects[o].z_velocity*t;   |        r[5]=game_objects[o].ps.z+z +game_objects[o].ps.vz*t;
+   }                                                                  }
+   return r;                                                          return r;
+}                                                               \  }
+                                                                >                  this.TU = id;
+                                                                >          }
+                                                                >          AIscript.type = AIscript.prototype.type = 'AIscript';
+                                                                >          return AIscript;
+                                                                >  });

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+sound sprite test.<br>
+select an item from drop down menu to play.
+<script>
+var soundpack;
+function define(data)
+{
+	soundpack = data;
+}
+</script>
+<script src='soundpack.js'></script>
+<select id='select'></select>
+<button id='play'>play</button>
+<script>
+var so = new soundsprite(soundpack);
+for( var I in soundpack.sound)
+{
+	var item = document.createElement('option');
+	item.value = I;
+	item.innerHTML = I;
+	$('select').appendChild(item);
+}
+$('play').onclick=$('select').onchange=function()
+{
+	so.play($('select').value);
+}
+
+function $(e)
+{
+	return document.getElementById(e);
+}
+
+function soundsprite(data)
+{
+	var types=
+	{
+		'mp3': 'audio/mpeg',
+		'ogg': 'audio/ogg',
+		'wav': 'audio/wav',
+		'aac': 'audio/aac',
+		'm4a': 'audio/x-m4a'
+	};
+	var This = this;
+	var doc = document;
+	var audio = this.audio = doc.createElement('audio');
+	this.frame = data.sound;
+	audio.preload='auto';
+	var baseurl = '../';
+	for( var i=0; i<data.ext.length; i++)
+	{
+		var source = doc.createElement('source');
+		source.src = baseurl+data.file+'.'+data.ext[i];
+		if( types[data.ext[i]])
+			source.type = types[data.ext[i]];
+		audio.appendChild(source);
+	}
+	audio.addEventListener('timeupdate',function(){This.timeupdate();},true);
+}
+soundsprite.prototype.play=function(id)
+{
+	if( id && this.frame[id])
+	{
+		this.current = this.frame[id];
+		this.audio.currentTime = this.current.start;
+		this.audio.play();
+	}
+}
+soundsprite.prototype.timeupdate=function()
+{
+	if( this.current)
+	{
+		if( this.audio.currentTime < this.current.start ||
+			this.audio.currentTime > this.current.end)
+			this.audio.pause();
+	}
+}
+</script>
+</body>
