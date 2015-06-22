@@ -73,6 +73,7 @@ define({
 
 	file_editing: {},
 
-	config: ['id: 100~199 drop weapon']
+	config: ['id: 100~199 drop weapon'],
 
+	icon: 'sprite/icon.png'
 });
