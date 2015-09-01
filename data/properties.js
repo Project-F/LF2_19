@@ -61,22 +61,49 @@ ID[207]= //davis_ball
 {
 };
 
+ID[212]= //ice column and whirlwind
+{
+	no_shadow: true
+};
+
+ID[213]= //ice sword
+{
+	mass: 0.5,
+	attackable: true,
+	run_throw: true,
+	jump_throw: true
+};
+
 // effects			id from 300~349 (extended standard)
 
 ID[300]= //hit
 {
 	oscillate: 4, //oscillation amplitude
 	cant_move: true,
-	drop_weapon: true
+	drop_weapon: true,
+	visual_effect: true
 };
 
 ID[301]= //blood
 {
 	cant_move: true,
-	drop_weapon: true
+	drop_weapon: true,
+	visual_effect: true
 };
 
-ID[304]=
+ID[303]= //ice
+{
+	cant_move: true,
+	drop_weapon: true,
+	frame_transition: 200,
+	frame_transition_power: 38,
+	frame_transition_not_state: 13, //cannot freeze already-frozen things
+	sound: '1/065'
+};
+
+ID[330]= ID[303];
+
+ID[304]= //shield
 {
 	cant_move: true,
 	drop_weapon: true,

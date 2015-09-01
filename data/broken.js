@@ -225,7 +225,7 @@ define({
     pic: 99, state: 9998, wait: 100, next: 0, dvx: 0, dvy: 0, centerx: 13, centery: 22, hit_a: 0, hit_d: 0, hit_j: 0
   },
   120: { name: "ice11",
-    pic: 90, state: 9999, wait: 4, next: 121, dvx: 0, dvy: 0, centerx: 10, centery: 27, hit_a: 0, hit_d: 0, hit_j: 0
+    pic: 90, state: 9999, wait: 4, next: 121, dvx: 0, dvy: 0, centerx: 10, centery: 27, hit_a: 0, hit_d: 0, hit_j: 0, sound: '1/066'
   },
   121: { name: "ice21",
     pic: 91, state: 9999, wait: 4, next: 122, dvx: 0, dvy: 0, centerx: 10, centery: 23, hit_a: 0, hit_d: 0, hit_j: 0

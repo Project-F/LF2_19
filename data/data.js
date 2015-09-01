@@ -20,6 +20,7 @@ define({
 		{id:30, name:'Bandit', type:'character', file:'data/bandit.js', pic:'sprite/bandit_f.png'},
 		{id: 1, name:'Deep', type:'character', file:'data/deep.js', pic:'sprite/deep_f.png'},
 		{id: 2, name:'John', type:'character', file:'data/john.js', pic:'sprite/john_f.png'},
+		{id: 8, name:'Freeze', type:'character', file:'data/freeze.js', pic:'sprite/freeze_f.png'},
 		{id: 9, name:'Dennis', type:'character', file:'data/dennis.js', pic:'sprite/dennis_f.png'},
 		{id:10, name:'Woody', type:'character', file:'data/woody.js', pic:'sprite/woody_f.png'},
 		{id:11, name:'Davis', type:'character', file:'data/davis.js', pic:'sprite/davis_f.png'},
@@ -38,6 +39,9 @@ define({
 		{id:205, type:'specialattack', file:'data/dennis_ball.js'},
 		{id:206, type:'specialattack', file:'data/woody_ball.js'},
 		{id:207, type:'specialattack', file:'data/davis_ball.js'},
+		{id:209, type:'specialattack', file:'data/freeze_ball.js'},
+		{id:212, type:'specialattack', file:'data/freeze_column.js'},
+		{id:213, type:'lightweapon', file:'data/weapon7.js'}, //ice_sword
 		{id:214, type:'specialattack', file:'data/john_biscuit.js'},
 		{id:215, type:'specialattack', file:'data/dennis_chase.js'}
 	],
