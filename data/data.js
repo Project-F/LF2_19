@@ -29,6 +29,7 @@ define({
 		{id:100, type:'lightweapon', file:'data/weapon0.js'}, //stick
 		{id:101, type:'lightweapon', file:'data/weapon2.js'}, //hoe
 		{id:150, type:'heavyweapon', file:'data/weapon1.js'}, //stone
+		{id:151, type:'heavyweapon', file:'data/weapon3.js'}, //wooden_box
 
 		{id:300, type:'effect', file:'data/effect0.js'}, //blast
 		{id:301, type:'effect', file:'data/effect1.js'}, //blood
