@@ -30,7 +30,10 @@ define({
     { id:212, frame:125 },
     { id:212, frame:130 },
     { id:212, frame:135 },
-    { frame:140 }, //burning_smoke
+    { id:302, frame:140 }, //burning_smoke
+    { id:302, frame:141 },
+    { id:302, frame:142 },
+    { id:302, frame:143 },
     { id:213, frame:150 }, //ice_sword
     { id:213, frame:154 },
     { id:123, frame:160 }, //beer

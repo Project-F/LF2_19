@@ -78,36 +78,12 @@ ID[213]= //ice sword
 
 ID[300]= //hit
 {
-	oscillate: 4, //oscillation amplitude
-	cant_move: true,
-	drop_weapon: true,
-	visual_effect: true
+	oscillate: 4 //oscillation amplitude
 };
 
-ID[301]= //blood
+ID[302]= //fire
 {
-	cant_move: true,
-	drop_weapon: true,
-	visual_effect: true
-};
-
-ID[303]= //ice
-{
-	cant_move: true,
-	drop_weapon: true,
-	frame_transition: 200,
-	frame_transition_power: 38,
-	frame_transition_not_state: 13, //cannot freeze already-frozen things
-	sound: '1/065'
-};
-
-ID[330]= ID[303];
-
-ID[304]= //shield
-{
-	cant_move: true,
-	drop_weapon: true,
-	reflect_flying_attack: true
+	oscillate: 3 //oscillation amplitude
 };
 
 return ID;

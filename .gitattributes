@@ -1,0 +1,9 @@
+* text=auto
+*.js eol=lf
+*.html eol=lf
+*.png binary
+*.jpg binary
+*.m4a binary
+*.ac3 binary
+*.mp3 binary
+*.ogg binary
