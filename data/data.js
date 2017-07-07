@@ -20,6 +20,7 @@ define({
 		{id:30, name:'Bandit', type:'character', file:'data/bandit.js', pic:'sprite/bandit_f.png'},
 		{id: 1, name:'Deep', type:'character', file:'data/deep.js', pic:'sprite/deep_f.png'},
 		{id: 2, name:'John', type:'character', file:'data/john.js', pic:'sprite/john_f.png'},
+		{id: 6, name:'Louis', type:'character', file:'data/louis.js', pic:'sprite/louis_f.png'},
 		{id: 7, name:'Firen', type:'character', file:'data/firen.js', pic:'sprite/firen_f.png'},
 		{id: 8, name:'Freeze', type:'character', file:'data/freeze.js', pic:'sprite/freeze_f.png'},
 		{id: 9, name:'Dennis', type:'character', file:'data/dennis.js', pic:'sprite/dennis_f.png'},
@@ -38,6 +39,7 @@ define({
 
 		{id:200, type:'specialattack', file:'data/john_ball.js'},
 		{id:203, type:'specialattack', file:'data/deep_ball.js'},
+		{id:204, type:'specialattack', file:'data/henry_louis_rudolf_wind.js'},
 		{id:205, type:'specialattack', file:'data/dennis_ball.js'},
 		{id:206, type:'specialattack', file:'data/woody_ball.js'},
 		{id:207, type:'specialattack', file:'data/davis_ball.js'},
