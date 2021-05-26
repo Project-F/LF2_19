@@ -53,6 +53,16 @@ ID[150]= //stone
 
 // specialattack	id from 200~299
 
+ID[201]= //henry_arrow1
+{
+	mass: 0.3
+};
+
+ID[202]= //rudolf_weapon
+{
+	mass: 0.5
+};
+
 ID[203]= //deep_ball
 {
 };
