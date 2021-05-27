@@ -691,7 +691,7 @@ define({
     pic: 14, state: 3, wait: 1, next: 66, dvx: 0, dvy: 0, dvz: 0, centerx: 39, centery: 78, hit_a: 0, hit_d: 0, hit_j: 0,
     sound: "1/024",
     opoint: {
-      kind: 1, x: 95, y: 57, action: 40, dvx: 22, dvy: -3, oid: 201, facing: 0
+      kind: 1, x: 95, y: 57, action: 40, dvx: 15, dvy: -3.4, oid: 201, facing: 0
     },
     bdy: [
       {
