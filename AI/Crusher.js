@@ -36,6 +36,9 @@ define(function()
 			}
 			return -1;
 		}
+      function updateTarget() {
+         game_objects = match.get_living_object();
+      }
 		this.name = 'CRUSHER 1.0';
 		this.designed_for = ['Davis'];
 		this.author = 'YinYin';
@@ -121,6 +124,7 @@ function id(){//main function
 //create ego wrapper
 //create moving functions/approaching/fleeing/waiting
    inputs();
+   updateTarget();
    var o=get_objects();
    if(stage_clear){controller.keypress('right');controller.keypress('down');}
    else if(stall(o[0][0]))return;
