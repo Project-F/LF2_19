@@ -79,7 +79,7 @@ define(function()
 		function load_target()
 		{
 			var targets = [];
-			var game_objects = match.scene.live; //list of living object in scene
+			var game_objects = match.get_living_object(); //list of living object in scene
 			for (var i in game_objects)
 			{
 				var obj = game_objects[i];

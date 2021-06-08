@@ -28,6 +28,7 @@ define(function()
 		}
 		function loadTarget(i)
 		{
+         game_objects = match.get_living_object();
 			if( game_objects[i])
 			{
 				target = game_objects[i];
@@ -502,9 +503,9 @@ function bdy(o,i,f,t){//get bdy i of object o in frame f at time t from now
 function get_attack_info(o,fo,x,fx){
    if( x===undefined && fx===undefined)
    {
-       x=fo;
-       fo=game_objects[o].AI.frame1();
-       fx=game_objects[x].AI.frame1();
+      x=fo;
+      fo=game_objects[o].AI.frame1();
+      fx=game_objects[x].AI.frame1();
    }
    var a=[31,0,-1,14];
    if(fo==-1)fo=game_objects[o].AI.frame1();
