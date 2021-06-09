@@ -28,7 +28,7 @@ define(function()
 		}
 		function loadTarget(i)
 		{
-         game_objects = match.get_living_object();
+			game_objects = match.get_living_object();
 			if( game_objects[i])
 			{
 				target = game_objects[i];
