@@ -60,7 +60,7 @@ ID[201]= //henry_arrow1
 
 ID[202]= //rudolf_weapon
 {
-	mass: 0.5
+	mass: 0.3
 };
 
 ID[203]= //deep_ball
