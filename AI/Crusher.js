@@ -28,7 +28,7 @@ define(function()
 		}
 		function loadTarget(i)
 		{
-         game_objects = match.get_living_object();
+			game_objects = match.get_living_object();
 			if( game_objects[i])
 			{
 				target = game_objects[i];
@@ -36,9 +36,9 @@ define(function()
 			}
 			return -1;
 		}
-      function updateTarget() {
-         game_objects = match.get_living_object();
-      }
+		function updateTarget() {
+			game_objects = match.get_living_object();
+		}
 		this.name = 'CRUSHER 1.0';
 		this.designed_for = ['Davis'];
 		this.author = 'YinYin';
