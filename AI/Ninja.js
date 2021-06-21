@@ -34,17 +34,21 @@
                 if (cc%201 == 0) {
                     if (mp_percent > 70) {
                         if (rand(10) == 0) {
+                            dir = reset_key(dir, dist_target.horizontal);
+                            dir_up = reset_key(dir_up, dist_target.diagonal);
                             disappear();
-                            console.log('Special Skill: Disappear');
                         } else if ((rand(10) == 1)) {
+                            
+                            dir = reset_key(dir, dist_target.horizontal);
+                            dir_up = reset_key(dir_up, dist_target.diagonal);
                             add_man();
-                            console.log('Special Skill: Add Man');
                         }
                     }
                 }
                 if (target.state() == 14) { // enermy lying -> do nothing
-                    dir = reset_key(dir, dist_target.horizontal);
+                    dir = reset_key(dir, dist_target.horizontal==1?0:1);
                     dir_up = reset_key(dir_up, dist_target.diagonal);
+                    run_to_target(DIR[dir], DIR[dir_up]);
                     cc ++;
                     return;
                 }
@@ -74,8 +78,17 @@
                         // :::Target is so far away
                         // ---Run to Target!!!! CHASE
                         // console.log('Chase: ', DIR[dir], DIR[dir_up]);  // Status report
-                        run_to_target(DIR[dir], DIR[dir_up]);
-                        update_action_list(ACT[2]);
+                        if (check_being_attack() != 999) {
+                            dir_up = reset_key(dir_up, dir_up);
+                            run_to_target(DIR[dir], DIR[dir_up]);
+                            if (check_being_attack == 5) {
+                                controller.keypress('jump');
+                            }
+                            update_action_list(ACT[2]);
+                        } else {
+                            run_to_target(DIR[dir], DIR[dir_up]);
+                            update_action_list(ACT[2]);
+                        }
                     } else if (dist_target.shortest > CHASE_DIST/2 && dist_target.shortest <= CHASE_DIST) {
                         // :::Target is in moderate range 
                         if (abs(dist_target.dz)>20) {
@@ -211,14 +224,22 @@
                     shortest,
                 }
             }
+            function update_action_list(push) {
+                if (push == 0) {
+                    return;
+                }
+                if (action_list.length == 5) {
+                    action_list.shift();
+                    action_list.push(push);
+                } else {
+                    action_list.push(push);
+                }
+            }
             function reset_key(dir, x) {
                 controller.key(DIR[dir], 0);
                 return x
             }
-            function walk(dir, dir_up) {
-                controller.key(DIR[dir],1);
-                controller.key(DIR[dir_up],1);
-            }
+
             // ++++++++++++++++++++++skill set++++++++++++++++++++
             // ----------------Basic Skill---------------------
             // V or ^ : Stop Action
@@ -244,21 +265,39 @@
             }
             function run_to_target(dir_horizontal, dir_diagonal) {
                 controller.key(dir_horizontal,1); //press 2nd time, run!
-
                 controller.keypress(dir_horizontal); //press 1st time
                 controller.keypress(dir_horizontal); //press 2nd time, run!
                 controller.key(dir_diagonal,1); //press 2nd time, run!
             }
-            function update_action_list(push) {
-                if (push == 0) {
-                    return;
+            function walk(dir, dir_up) {
+                controller.key(DIR[dir],1);
+                controller.key(DIR[dir_up],1);
+            }
+            function check_being_attack() {
+                var living = match.scene.live;
+                var enermy_attack = [];
+                for (const obj in living) {
+                    if (living[obj].type == 'specialattack' && living[obj].team != self.team){
+                        enermy_attack.push(living[obj]);
+                    }
                 }
-                if (action_list.length == 5) {
-                    action_list.shift();
-                    action_list.push(push);
-                } else {
-                    action_list.push(push);
+                if (enermy_attack.length > 0) {
+                    const dist_attack = distance(enermy_attack[0]);
+                    if (abs(dist_attack.shortest) < CHASE_DIST + 500) {
+                        if (abs(dist_attack.dz) < 0 && abs(dist_attack.dz) > -50) { // i am below ball
+                            if (dir_up == 2) { // i running up
+                                dir_up = 3; // change to run down
+                            }
+                            return 0
+                        } else if (abs(dist_attack.dz) > 0 && abs(dist_attack.dz) < 50) { // i am above ball
+                            if (dir_up == 3) { // i running down
+                                dir_up = 2; // change to run up
+                            }
+                            return 0
+                        }
+                    }
                 }
+                return 999;
             }
             function check_throw() {
                 const length = action_list.length;
