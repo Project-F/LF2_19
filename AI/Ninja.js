@@ -12,60 +12,157 @@
             //states
             var cc=0; //counter
             var dir=1; // Direction     0:left  1:right
+            var dir_up=2; // Direction      2:up    3:down
             var DIR = ['left','right','up','down']; //number to direction mapping
             var target; //target opponent to chase after
-            var action = ['attack', 'escape', 'defend', 'skill'];
-            var status = ['standing', 'lying', 'jumping', 'dashing', 'walking', 'attacking', 'hurting']; // self.state
-            var skill = false;
-            var running = true;
+            var ACT = ['nothing', 'attack', 'chase', 'defend', 'skill', 'jump'];
+            var action_list = [];
+            var is_throw_weapon = false;
+            var temp_cc = -1;
             const CHASE_DIST = 180;
 
             this.TU = function()
             {	//this is the main AI routine that will be called once every 2 or 3 TU
                 // console.log(self.state())
-                var hp_percent = self.health.hp/self.health.hp_full;
-                var mp_percent = self.health.mp/self.health.mp_full;
                 // update_status();
-                if( cc%100===0) //load a new target once in a while
+                if (cc%100===0) { //load a new target once in a while
                     load_target();
-                var dx = target.ps.x-self.ps.x; // distance between me n target (x)
-                var dz = target.ps.z-self.ps.z; // distance between me n target (z)
-                const dist_target = distance(target);
-                if (cc%5==0){
+                    // console.log('Loading New target: ', target); // Status report
+                }
+                const dist_target = distance(target); // information between me and target (dx, dy, dz, horizontal / diagonal index)
+                const mp_percent = 100 * self.health.mp/self.health.mp_full; // personal info analysis
+                if (cc%201 == 0) {
+                    if (mp_percent > 70) {
+                        if (rand(10) == 0) {
+                            disappear();
+                            console.log('Special Skill: Disappear');
+                        } else if ((rand(10) == 1)) {
+                            add_man();
+                            console.log('Special Skill: Add Man');
+                        }
+                    }
+                }
+                if (target.state() == 14) { // enermy lying -> do nothing
+                    dir = reset_key(dir, dist_target.horizontal);
+                    dir_up = reset_key(dir_up, dist_target.diagonal);
+                    cc ++;
+                    return;
+                }
+                if (self.hold.obj) { // holding weapon -> throw it
+                    throw_weapon(dist_target.horizontal, cc);
+                    cc ++;
+                    return;
+                }
+                // reset
+                if (cc%3==0){
+                    dir = reset_key(dir, dist_target.horizontal);
+                    dir_up = reset_key(dir_up, dist_target.diagonal);
+                    // controller.key('left', 1) // go 'left'/'up' in normal speed
+                    // controller.key('up', 1) // go 'left'/'up' in normal speed
+                    // controller.keypress('up') // go 'left' in slow speed || siu yi ma bei 
+                    // controller.keypress('left', 0, 0) // No Move
+                    // controller.keypress('left', 0, 1) // No Move
+                    // controller.keypress('left', 1, 1) // go 'left' in normal speed
+
+                    // Far: chase
+                    // Moderate: 
+                        // on same horizontal plane: Range attack (Star)
+                        // dz > some value (no attackable): adjust distance
+                    // Close: Attack
+                        // Mostly Sword attack
                     if (dist_target.shortest > CHASE_DIST) {
-                        run_to_target(DIR[dist_target.horizontal], DIR[dist_target.diagonal]);
+                        // :::Target is so far away
+                        // ---Run to Target!!!! CHASE
+                        // console.log('Chase: ', DIR[dir], DIR[dir_up]);  // Status report
+                        run_to_target(DIR[dir], DIR[dir_up]);
+                        update_action_list(ACT[2]);
                     } else if (dist_target.shortest > CHASE_DIST/2 && dist_target.shortest <= CHASE_DIST) {
+                        // :::Target is in moderate range 
                         if (abs(dist_target.dz)>20) {
-                            controller.keypress(DIR[dist_target.horizontal==1?0:1]);
-                            controller.keypress(DIR[dist_target.horizontal]);
-                            // adjust_diagonal(DIR[dist_target.diagonal]);
+                            // ^ V move to get to enermy
+                            // console.log('Moderate: ', dir_up); // Status report
+                            walk(dir, dir_up);
+                            update_action_list(ACT[2]);
                         } else {
-                            console.log('Inside');
+                            // < > move to get to enermy
+                            // console.log('Moderate', dir); // Status report
+                            controller.key(DIR[dir],1);
+                            controller.key(DIR[dir],0);
+                            // perform running sword attact (run -> att)
                             if (self.state() == 2) {
                                 controller.keypress('att');
+                                update_action_list(ACT[1]);
                             } else {
-                                controller.keypress(DIR[dist_target.horizontal==1?0:1]);
+                                // if i am in normal situation
+                                if (self.state() in [0, 1, 2, 5, 6]) { // stand, walk, run, dash, row
+                                    if (mp_percent > 70) {
+                                        // console.log('5Star')
+                                        star_5(dir);
+                                        update_action_list(ACT[4]);
+                                        
+                                    } else if (mp_percent > 40) {
+                                        if (rand(2)==0) {
+                                            controller.keypress('att');
+                                            update_action_list(ACT[1]);
+                                        } else {
+                                            controller.keypress('jump');
+                                            update_action_list(ACT[5]);
+                                        }
+                                    } else {
+                                        skill_jumping_sword(DIR[dist_target.horizontal]);
+                                        update_action_list(ACT[4]);
+                                    }
+                                } else {
+                                    if (rand(2) == 0) {
+                                        controller.keypress('def');
+                                        update_action_list(ACT[3]);
+                                        
+                                    } else {
+                                        skill_jumping_sword(DIR[dist_target.horizontal]);
+                                        update_action_list(ACT[4]);
+                                    }
+                                }
                             }
                         }
                     } else {
+                        // :::Target is near me
                         if (abs(dist_target.dz) < 10) {
-                            skill_jumping_sword(DIR[dist_target.horizontal]);
+                            // console.log('Close', dir);  // Status report
+                            if (self.ps.dir != dir) {
+                                controller.key(DIR[dir],0);
+                                controller.key(DIR[dir],1);
+                            }
+                            controller.keypress('att');
+                            update_action_list(ACT[1]); 
+                            // var save_mp = rand(2);
+                            // switch (save_mp) {
+                            //     case 0: skill_jumping_sword(DIR[dist_target.horizontal]); update_action_list(ACT[4]); break;//save mp
+                            //     case 1: controller.keypress('att'); update_action_list(ACT[1]); break; // attack
+                            // }
                         } else {
-                            console.log('Diagonal');
-                            controller.keypress(DIR[dist_target.diagonal], 1);
+                            // console.log('Close', dir_up); // Status report
+                            controller.key(DIR[dir_up], 0);
+                            dir_up = dist_target.diagonal
+                            controller.key(DIR[dir_up], 1);
+                            update_action_list(ACT[2]);
+                            
                         }
                     }
                 } else if( cc%10===0) {
+                    // :::Do it in longer frequency
+                    // console.log('random Act'); // Status report
                     var act = rand(4); //get a random number from [0,1,2,3]
+                    controller.key(DIR[dir], 0);
                     switch (act)
                     {
                         case 0: break; //do nothing
-                        case 1: controller.keypress('def'); break;
-                        case 2: controller.keypress('jump'); break;
-                        case 3: controller.keypress('att'); break;
+                        case 1: controller.keypress('def'); update_action_list(ACT[3]); break;
+                        case 2: controller.keypress('jump'); update_action_list(ACT[5]); break;
+                        case 3: controller.keypress('att'); update_action_list(ACT[1]); break;
                     }
                 }
                 cc++;
+                // console.log('Action: ', action_list)
             }
             
             //utility functions
@@ -114,69 +211,79 @@
                     shortest,
                 }
             }
-            // ++++++++++++++++++Status Check++++++++++++++++++
-            function update_status() {
-                console.log(self.state());
+            function reset_key(dir, x) {
+                controller.key(DIR[dir], 0);
+                return x
             }
-
+            function walk(dir, dir_up) {
+                controller.key(DIR[dir],1);
+                controller.key(DIR[dir_up],1);
+            }
             // ++++++++++++++++++++++skill set++++++++++++++++++++
             // ----------------Basic Skill---------------------
             // V or ^ : Stop Action
             // >> or <<: Dash
             // TODO: to solve diagonal movement
-            function adjust_diagonal(dir_diagonal) {
-                controller.keypress(dir_diagonal,1); //press 1st time
+            function throw_weapon(dir, current_cc) {
+                if (temp_cc == -1) {
+                    temp_cc = current_cc;
+                }
+                if (current_cc>temp_cc+10){
+                    is_throw_weapon = true;
+                }
+                if (is_throw_weapon) {
+                    controller.keypress(DIR[dir], 1, 1);
+                    controller.keypress('att');
+                    is_throw_weapon = false;
+                    temp_cc = -1;
+                } else {
+                    controller.keypress(DIR[dir]);
+                    controller.keypress(DIR[dir]);
+                    return;
+                }
             }
             function run_to_target(dir_horizontal, dir_diagonal) {
-                controller.key(dir_horizontal,0);
+                controller.key(dir_horizontal,1); //press 2nd time, run!
+
                 controller.keypress(dir_horizontal); //press 1st time
                 controller.keypress(dir_horizontal); //press 2nd time, run!
+                controller.key(dir_diagonal,1); //press 2nd time, run!
+            }
+            function update_action_list(push) {
+                if (push == 0) {
+                    return;
+                }
+                if (action_list.length == 5) {
+                    action_list.shift();
+                    action_list.push(push);
+                } else {
+                    action_list.push(push);
+                }
+            }
+            function check_throw() {
+                const length = action_list.length;
+                if (length >= 3) {
+                    if (action_list[length-1] == ACT[1]
+                        && action_list[length-2] == ACT[1]
+                        && action_list[length-3] == ACT[1])
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
             // -----------------Shuriken/Ninja Star---------------
             // AAA: weapon_continuous
             // D>A: weapon_5
-            
-            function star_continuous(dir) { // OK
-                controller.keyseq([dir,'att', 'att', 'att']);
-                // controller.keypress(DIR[dir]);
-                // controller.keypress('att');
-                // controller.keypress('att');
-                // controller.keypress('att');
-            }
             function star_5(dir) { // OK
-                controller.keyseq(['def', dir, 'att']);
-                // controller.keypress('def');
-                // controller.keypress(DIR[dir]);
-                // controller.keypress('att');
+                controller.keypress('def');
+                controller.keypress(DIR[dir]);
+                controller.keypress('att');
             }
             // -----------------Sword Skills-----------------
-            // Remark::Cannot perform in 3 TU
-            // JA: Standing Jumping Sword
-            // >>JA: Dashing Jumping Sword
             // D>J: Skill Jumping Sword
-            
-            function standing_jumping_sword(dir, status) {
-                if (skill && status != 'jumping') {
-                    controller.keypress('jump');
-                } else if (skill && status == 'jumping'){
-                    controller.keyseq([dir, 'att']);
-                } else {
-                    skill = false;
-                }
-                // controller.keypress('jump');
-                // controller.keypress(DIR[dir]);
-                // controller.keypress('att');
-            }
-            function dashing_jumping_sword(dir) { //given in dashing state
-                controller.keyseq(['jump', 'att']);
-                // controller.keypress('jump');
-                // controller.keypress('att');
-            }
             function skill_jumping_sword(dir) { // OK
                 controller.keyseq(['def', dir, 'jump']);
-                // controller.keypress('def');
-                // controller.keypress(DIR[dir]);
-                // controller.keypress('jump');
             }
             // -----------------Special Skill------------------
             // DVJ: +man
@@ -184,22 +291,15 @@
             
             function add_man() {
                 controller.keyseq(['def', DIR[3], 'jump']);
-                // controller.keypress('def');
-                // controller.keypress(DIR[3]);
-                // controller.keypress('jump');
             }
             function disappear() {
                 controller.keyseq(['def', DIR[2], 'jump']);
-                // controller.keypress('def');
-                // controller.keypress(DIR[2]);
-                // controller.keypress('jump');
             }
             // -----------------Catch Skill----------------------
             // AAA -> > -> >A  : catch and throw
             // AAA -> > -> DJA : catch and transform
-            function catch_throw(dir) {
+            function catch_target(dir) {
                 controller.keyseq([DIR[dir], DIR[dir], 'att']);
-                // controller.keypress(DIR[dir]);
             }
             function catch_transform() {
                 controller.keyseq([DIR[dir], 'def', 'jump', 'att']);
