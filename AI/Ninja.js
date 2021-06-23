@@ -29,6 +29,10 @@
                     load_target();
                     // console.log('Loading New target: ', target); // Status report
                 }
+                if (target == null) {
+                    reset_all_key();
+                    return;
+                }
                 const dist_target = distance(target); // information between me and target (dx, dy, dz, horizontal / diagonal index)
                 const mp_percent = 100 * self.health.mp/self.health.mp_full; // personal info analysis
                 if (cc%201 == 0) {
@@ -45,10 +49,11 @@
                         }
                     }
                 }
-                if (target.state() == 14) { // enermy lying -> do nothing
+                if (target.state() == 14 && dist_target.shortest < CHASE_DIST * 1.5) { // enermy lying -> do nothing
                     dir = reset_key(dir, dist_target.horizontal==1?0:1);
                     dir_up = reset_key(dir_up, dist_target.diagonal);
                     run_to_target(DIR[dir], DIR[dir_up]);
+                    dir_up = reset_key(dir_up, dist_target.diagonal);
                     cc ++;
                     return;
                 }
@@ -146,12 +151,7 @@
                                 controller.key(DIR[dir],1);
                             }
                             controller.keypress('att');
-                            update_action_list(ACT[1]); 
-                            // var save_mp = rand(2);
-                            // switch (save_mp) {
-                            //     case 0: skill_jumping_sword(DIR[dist_target.horizontal]); update_action_list(ACT[4]); break;//save mp
-                            //     case 1: controller.keypress('att'); update_action_list(ACT[1]); break; // attack
-                            // }
+                            update_action_list(ACT[1]);
                         } else {
                             // console.log('Close', dir_up); // Status report
                             controller.key(DIR[dir_up], 0);
@@ -187,25 +187,29 @@
             function load_target()
             {
                 var targets = [];
-                var game_objects = match.scene.live; //list of living object in scene
+                var all_dead = true;
+                var game_objects = match.get_living_object(); //list of living object in scene
                 for (var i in game_objects)
                 {
                     var obj = game_objects[i];
                     if( obj.type==='character' &&
                         obj.team!==self.team)
                     {
-                        var dx = obj.ps.x-self.ps.x;
-                        var dz = obj.ps.z-self.ps.z;
-                        targets.push({
-                            dist: distance(obj).shortest,
-                            obj: obj
-                        });
+                        if (obj.health.hp > 0) {
+                            all_dead = false;
+                            targets.push({
+                                dist: distance(obj).shortest,
+                                obj: obj
+                            });
+                        }
                     }
                 }
                 targets.sort(function(a,b){
                     return a.dist-b.dist; //sort according to distance
                 });
-                if( rand(2)===0)
+                if (all_dead) {
+                    target = null;
+                } else if( rand(2)===0)
                     target = targets[rand(targets.length)].obj; //select a random opponent as target
                 else
                     target = targets[0].obj; //select the closest opponent
@@ -239,7 +243,10 @@
                 controller.key(DIR[dir], 0);
                 return x
             }
-
+            function reset_all_key() {
+                controller.key(DIR[0], 0);
+                controller.key(DIR[1], 0);
+            }
             // ++++++++++++++++++++++skill set++++++++++++++++++++
             // ----------------Basic Skill---------------------
             // V or ^ : Stop Action
