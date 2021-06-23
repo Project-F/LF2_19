@@ -246,6 +246,8 @@
             function reset_all_key() {
                 controller.key(DIR[0], 0);
                 controller.key(DIR[1], 0);
+                controller.key(DIR[2], 0);
+                controller.key(DIR[3], 0);
             }
             // ++++++++++++++++++++++skill set++++++++++++++++++++
             // ----------------Basic Skill---------------------
