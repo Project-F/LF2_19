@@ -100,7 +100,7 @@ define(function()
 			if( rand(2)===0)
 				target = targets[rand(targets.length)].obj; //select a random opponent as target
 			else
-				target = targets[0].obj; //select the closest opponent
+				target = targets[0]?targets[0].obj:null; //select the closest opponent
 		}
 	}
 	AIscript.type = AIscript.prototype.type = 'AIscript'; //must define a type
