@@ -21,7 +21,7 @@ define({
 		{id: 1, name:'Deep', type:'character', file:'data/deep.js', pic:'sprite/deep_f.png'},
 		{id: 2, name:'John', type:'character', file:'data/john.js', pic:'sprite/john_f.png'},
 		{id: 4, name:'Henry', type:'character', file:'data/henry.js', pic:'sprite/henry_f.png'},
-		{id: 5, name:'Rudolf', type:'character', file:'data/rudolf.js', pic:'sprite/rudolf_f.png'},
+		{id: 5, name:'Rudolf', type:'character', file:'data/rudolf.js', pic:'sprite/rudolf_f.png', AI: 4},
 		{id: 6, name:'Louis', type:'character', file:'data/louis.js', pic:'sprite/louis_f.png'},
 		{id: 7, name:'Firen', type:'character', file:'data/firen.js', pic:'sprite/firen_f.png'},
 		{id: 8, name:'Freeze', type:'character', file:'data/freeze.js', pic:'sprite/freeze_f.png'},
@@ -61,7 +61,8 @@ define({
 	[
 		{id:1, file:'AI/Crusher.js', name:'CRUSHER 1.0'},
 		{id:2, file:'AI/Challangar.js', name:'CHALLANGAR 1.0'},
-		{id:3, file:'AI/dumbass.js', name:'dumbass'}
+		{id:3, file:'AI/dumbass.js', name:'dumbass'},
+		{id:4, file:'AI/Ninja.js', name:'Ninja'},
 	],
 
 	background:
