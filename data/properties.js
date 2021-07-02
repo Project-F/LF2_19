@@ -55,12 +55,14 @@ ID[150]= //stone
 
 ID[201]= //henry_arrow1
 {
-	mass: 0.3
+	mass: 0.3,
+	zwidth: 1
 };
 
 ID[202]= //rudolf_weapon
 {
-	mass: 0.3
+	mass: 0.3,
+	zwidth: 1
 };
 
 ID[203]= //deep_ball
