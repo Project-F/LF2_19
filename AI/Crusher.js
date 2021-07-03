@@ -124,6 +124,7 @@ function id(){//main function
 //create ego wrapper
 //create moving functions/approaching/fleeing/waiting
    if(self.uid==-1)return;
+   if(self.health.hp<=0)return;
    inputs();
    updateTarget();
    var o=get_objects();
