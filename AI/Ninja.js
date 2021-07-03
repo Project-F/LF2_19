@@ -35,13 +35,13 @@
                 }
                 const dist_target = distance(target); // information between me and target (dx, dy, dz, horizontal / diagonal index)
                 const mp_percent = 100 * self.health.mp/self.health.mp_full; // personal info analysis
-                if (cc%201 == 0) {
+                if (cc%101 == 0) {
                     if (mp_percent > 70) {
-                        if (rand(10) == 0) {
+                        if (rand(10) % 2 == 0) {
                             dir = reset_key(dir, dist_target.horizontal);
                             dir_up = reset_key(dir_up, dist_target.diagonal);
                             disappear();
-                        } else if ((rand(10) == 1)) {
+                        } else if ((rand(10) % 2 == 1)) {
                             
                             dir = reset_key(dir, dist_target.horizontal);
                             dir_up = reset_key(dir_up, dist_target.diagonal);
